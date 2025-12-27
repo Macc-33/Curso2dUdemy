@@ -578,7 +578,7 @@
                 {
                     "name": "positive",
                     "id": "1e6129aa-a8da-4163-bff7-038589bee009",
-                    "path": "<Keyboard>/anyKey",
+                    "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
