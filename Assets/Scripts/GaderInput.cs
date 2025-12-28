@@ -7,6 +7,10 @@ public class GaderInput : MonoBehaviour
 
     public float ValueX { get => _valueX;  }
 
+    [SerializeField] private bool _isJumping;
+    public bool IsJumping { get => _isJumping; set => _isJumping = value; }
+
+   
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Awake()
     {
@@ -16,6 +20,8 @@ public class GaderInput : MonoBehaviour
     {
         controls.Player.Move.performed += StarMove;
         controls.Player.Move.canceled += StopMove;
+        controls.Player.Jump.performed += StarJump;
+        controls.Player.Jump.canceled += StopJump;
         controls.Player.Enable();
     }
     private void StarMove(InputAction.CallbackContext context)
@@ -26,10 +32,22 @@ public class GaderInput : MonoBehaviour
     {
         _valueX = 0;
     }
+
+    private void StarJump(InputAction.CallbackContext context)
+    {
+        _isJumping = true;
+    }
+    private void StopJump(InputAction.CallbackContext context)
+    {
+        _isJumping = false;
+    }
+
     private void OnDisable()
     {
         controls.Player.Move.performed -= StarMove;
         controls.Player.Move.canceled -= StopMove;
+        controls.Player.Jump.performed -= StarJump;
+        controls.Player.Jump.canceled -= StopJump;
         controls.Player.Disable();  
     }
 }

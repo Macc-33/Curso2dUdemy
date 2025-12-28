@@ -452,7 +452,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -477,6 +477,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   speed: 3.5
+  jumpForce: 10
 --- !u!114 &576004927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -490,6 +491,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GaderInput
   _valueX: 0
+  _isJumping: 0
 --- !u!114 &576004928
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3166,7 +3168,6 @@ GameObject:
   - component: {fileID: 2066418721}
   - component: {fileID: 2066418720}
   - component: {fileID: 2066418719}
-  - component: {fileID: 2066418722}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -6115,18 +6116,6 @@ TilemapCollider2D:
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0
   m_UseDelaunayMesh: 0
---- !u!114 &2066418722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2066418715}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c2596f7dd20765e47902c883c6529566, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Movenment
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
