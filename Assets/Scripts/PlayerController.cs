@@ -10,18 +10,22 @@ public class PlayerController : MonoBehaviour
     private Transform m_transform;
     private Animator m_animator;
 
-    //Values
-
+    [Header("Move and jumps settings")]
     [SerializeField] private float speed;
-    private int direction = 1;
-    private int idSpeed;
-    private int idIsGrounded;
+    private int direction = 1;   
     [SerializeField] private float jumpForce;
+    [SerializeField] private int extraJump;
+    [SerializeField] private int counterExtraJump;
+    private int idSpeed;
 
-    [SerializeField] private Transform rFoot, lFoot;
+    [Header("Ground settings")]
+    [SerializeField] private Transform rFoot;
+    [SerializeField] private Transform lFoot;
     [SerializeField] private bool isGrounded;
     [SerializeField] private float rayLegnth;
     [SerializeField] private LayerMask groundLayer;
+    private int idIsGrounded;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -34,6 +38,7 @@ public class PlayerController : MonoBehaviour
         m_animator = GetComponent<Animator>();
         lFoot = GameObject.Find("L_Foot").GetComponent<Transform>();
         rFoot = GameObject.Find("R_Foot").GetComponent<Transform>();
+        counterExtraJump = extraJump;
     }
 
     private void Update()
@@ -72,6 +77,11 @@ public class PlayerController : MonoBehaviour
         {
             if(isGrounded)
                m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.ValueX, jumpForce);
+            if(counterExtraJump > 0)
+            {
+                m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.ValueX, jumpForce);
+                counterExtraJump--;
+            }
         }
         m_gaderInput.IsJumping = false;
     }
@@ -82,6 +92,7 @@ public class PlayerController : MonoBehaviour
         if(lFootRay || rFootRay)
         {
             isGrounded = true;
+            counterExtraJump = extraJump;
         }
         else
         {
