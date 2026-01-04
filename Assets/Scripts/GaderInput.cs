@@ -26,7 +26,7 @@ public class GaderInput : MonoBehaviour
     }
     private void StarMove(InputAction.CallbackContext context)
     {
-        _valueX = context.ReadValue<float>();
+        _valueX = Mathf.RoundToInt(context.ReadValue<float>()); //mathf.rountoint es para redondear el porcesador del gamepad
     }
     private void StopMove(InputAction.CallbackContext context)
     {
