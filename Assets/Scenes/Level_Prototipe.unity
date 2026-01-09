@@ -374,9 +374,9 @@ GameObject:
   - component: {fileID: 576004925}
   - component: {fileID: 576004924}
   - component: {fileID: 576004928}
+  - component: {fileID: 576004929}
   - component: {fileID: 576004927}
   - component: {fileID: 576004926}
-  - component: {fileID: 576004929}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -552,6 +552,9 @@ MonoBehaviour:
   isWallDetected: 0
   canWallSlide: 0
   speedSlice: 0
+  wallJumpForce: {x: 5, y: 8}
+  isWasJumping: 0
+  wallJumpDuration: 0.5
 --- !u!114 &576004927
 MonoBehaviour:
   m_ObjectHideFlags: 0

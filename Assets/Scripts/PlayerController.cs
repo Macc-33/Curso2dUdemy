@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 
@@ -35,6 +36,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isWallDetected;
     [SerializeField] private bool canWallSlide;
     [SerializeField] private float speedSlice;
+    [SerializeField] private Vector2 wallJumpForce;
+    [SerializeField] private bool isWasJumping;
+    [SerializeField] private float wallJumpDuration;
+
 
     [Header("Animations settings")]
     private int idSpeed;
@@ -79,20 +84,6 @@ public class PlayerController : MonoBehaviour
         HandleWall(); //Detectar paretes 
         handelWallSlide();
     }
-
-    private void handelWallSlide()
-    {
-        canWallSlide = isWallDetected;
-        if (!canWallSlide)return;
-        speedSlice = m_gaderInput.Value.y < 0 ? 1 : 0.5f;
-        m_rigidbody.linearVelocity = new Vector2 (m_rigidbody.linearVelocity.x, m_rigidbody.linearVelocity.y * speedSlice);
-    }
-
-    private void HandleWall()
-    {
-        isWallDetected = Physics2D.Raycast(m_transform.position, Vector2.right * direction, checkWallDistance, groundLayer);
-    }
-
     private void HandleGround()
     {
         lFootRay = Physics2D.Raycast(lFoot.position, Vector2.down, rayLength, groundLayer);
@@ -109,8 +100,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void HandleWall()
+    {
+        isWallDetected = Physics2D.Raycast(m_transform.position, Vector2.right * direction, checkWallDistance, groundLayer);
+    }
+    private void handelWallSlide()
+    {
+        canWallSlide = isWallDetected;
+        if (!canWallSlide)return;
+        speedSlice = m_gaderInput.Value.y < 0 ? 1 : 0.5f;
+        m_rigidbody.linearVelocity = new Vector2 (m_rigidbody.linearVelocity.x, m_rigidbody.linearVelocity.y * speedSlice);
+    }
+
+
+
     private void Move()
     {
+        if (isWallDetected && !isGrounded) return;
+        if (isWasJumping) return;
         Flip();
         m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, m_rigidbody.linearVelocityY); //Movimiento en eje X del personaje 
 
@@ -120,27 +127,51 @@ public class PlayerController : MonoBehaviour
     {
        if(m_gaderInput.Value.x * direction < 0)
         {
-            m_transform.localScale = new Vector3(-m_transform.localScale.x, 1, 1);
-            direction *= -1;
+            HandleDirection();
         }
     }
+
+    private void HandleDirection()
+    {
+        m_transform.localScale = new Vector3(-m_transform.localScale.x, 1, 1);
+        direction *= -1;
+    }
+
     private void Jump()
     {
         if(m_gaderInput.IsJumping)
         {
             if (isGrounded)
             {
-               m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, jumpForce);
+                m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, jumpForce);
                 canDoubleJump = true;
             }
-            else if(counterExtraJump > 0 && canDoubleJump)
-            {
-                m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, jumpForce);
-                counterExtraJump--;
-            }
+            else if (isWallDetected) WallJump();
+            else if (counterExtraJump > 0 && canDoubleJump) DobleJump();
+           
         }
         m_gaderInput.IsJumping = false;
     }
+    private void WallJump()
+    {
+        m_rigidbody.linearVelocity = new Vector2(wallJumpForce.x * -direction, wallJumpForce.y);
+        HandleDirection();
+        StartCoroutine(WallJumpRutine());
+    }
+
+    IEnumerator WallJumpRutine()
+    {
+        isWasJumping = true;
+        
+        yield return new WaitForSeconds(wallJumpDuration);
+        isWasJumping = false;
+    }
+    private void DobleJump()
+    {
+        m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, jumpForce);
+        counterExtraJump--;
+    }
+
     private void SetAnimatorValues()
     {
         m_animator.SetFloat(idSpeed, Mathf.Abs(m_rigidbody.linearVelocityX));
