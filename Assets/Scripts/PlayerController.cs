@@ -33,10 +33,13 @@ public class PlayerController : MonoBehaviour
     [Header("Wall settings")]
     [SerializeField] private float checkWallDistance;
     [SerializeField] private bool isWallDetected;
+    [SerializeField] private bool canWallSlide;
+    [SerializeField] private float speedSlice;
 
     [Header("Animations settings")]
     private int idSpeed;
     private int idIsGrounded;
+    private int idIsWallDetected;
 
 
     private void Awake()
@@ -50,7 +53,8 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         idSpeed = Animator.StringToHash("Speed"); // animator.strigtohash es para comvertir cualquier string de texto en un valor numerico y asi no consume tanto recurso 
-        idIsGrounded = Animator.StringToHash("IsGrounded");       
+        idIsGrounded = Animator.StringToHash("IsGrounded");
+        idIsWallDetected = Animator.StringToHash("IsWallDetected");
         lFoot = GameObject.Find("L_Foot").GetComponent<Transform>();
         rFoot = GameObject.Find("R_Foot").GetComponent<Transform>();
         counterExtraJump = extraJump;
@@ -73,6 +77,15 @@ public class PlayerController : MonoBehaviour
     {
         HandleGround(); //Detectar suelo ....traducido
         HandleWall(); //Detectar paretes 
+        handelWallSlide();
+    }
+
+    private void handelWallSlide()
+    {
+        canWallSlide = isWallDetected;
+        if (!canWallSlide)return;
+        speedSlice = m_gaderInput.Value.y < 0 ? 1 : 0.5f;
+        m_rigidbody.linearVelocity = new Vector2 (m_rigidbody.linearVelocity.x, m_rigidbody.linearVelocity.y * speedSlice);
     }
 
     private void HandleWall()
@@ -99,13 +112,13 @@ public class PlayerController : MonoBehaviour
     private void Move()
     {
         Flip();
-        m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.ValueX, m_rigidbody.linearVelocityY); //Movimiento en eje X del personaje 
+        m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, m_rigidbody.linearVelocityY); //Movimiento en eje X del personaje 
 
     }
 
     private void Flip()
     {
-       if(m_gaderInput.ValueX * direction < 0)
+       if(m_gaderInput.Value.x * direction < 0)
         {
             m_transform.localScale = new Vector3(-m_transform.localScale.x, 1, 1);
             direction *= -1;
@@ -117,12 +130,12 @@ public class PlayerController : MonoBehaviour
         {
             if (isGrounded)
             {
-               m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.ValueX, jumpForce);
+               m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, jumpForce);
                 canDoubleJump = true;
             }
             else if(counterExtraJump > 0 && canDoubleJump)
             {
-                m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.ValueX, jumpForce);
+                m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, jumpForce);
                 counterExtraJump--;
             }
         }
@@ -132,6 +145,7 @@ public class PlayerController : MonoBehaviour
     {
         m_animator.SetFloat(idSpeed, Mathf.Abs(m_rigidbody.linearVelocityX));
         m_animator.SetBool(idIsGrounded, isGrounded);
+        m_animator.SetBool(idIsWallDetected,isWallDetected);
     }
 
     private void OnDrawGizmos()

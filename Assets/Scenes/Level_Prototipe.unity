@@ -550,6 +550,8 @@ MonoBehaviour:
     m_Bits: 128
   checkWallDistance: 0.29
   isWallDetected: 0
+  canWallSlide: 0
+  speedSlice: 0
 --- !u!114 &576004927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -562,7 +564,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36f4c6ad295ccde48b0f1cf28941d28f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GaderInput
-  _valueX: 0
+  _value: {x: 0, y: 0}
   _isJumping: 0
 --- !u!114 &576004928
 MonoBehaviour:

@@ -3,9 +3,9 @@ using UnityEngine.InputSystem;
 public class GaderInput : MonoBehaviour
 {
     private Controls controls;
-    [SerializeField] private float _valueX;
+    [SerializeField] private Vector2 _value;
 
-    public float ValueX { get => _valueX;  }
+    public Vector2 Value { get => _value;  }
 
     [SerializeField] private bool _isJumping;
     public bool IsJumping { get => _isJumping; set => _isJumping = value; }
@@ -26,11 +26,11 @@ public class GaderInput : MonoBehaviour
     }
     private void StarMove(InputAction.CallbackContext context)
     {
-        _valueX = Mathf.RoundToInt(context.ReadValue<float>()); //mathf.rountoint es para redondear el porcesador del gamepad
+        _value = context.ReadValue<Vector2>().normalized; //mathf.rountoint es para redondear el porcesador del gamepad
     }
     private void StopMove(InputAction.CallbackContext context)
     {
-        _valueX = 0;
+        _value = Vector2.zero;
     }
 
     private void StarJump(InputAction.CallbackContext context)
