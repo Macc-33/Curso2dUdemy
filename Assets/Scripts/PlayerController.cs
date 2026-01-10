@@ -40,11 +40,18 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isWasJumping;
     [SerializeField] private float wallJumpDuration;
 
+    [Header("Hit Settings")]
+    [SerializeField] private bool isKnocked;
+    [SerializeField] private bool canBeKnocked;
+    [SerializeField] private Vector2 knockedPower;
+    [SerializeField] private float knockedDuration;
+
 
     [Header("Animations settings")]
     private int idSpeed;
     private int idIsGrounded;
     private int idIsWallDetected;
+    private int idKnockBack;
 
 
     private void Awake()
@@ -60,6 +67,7 @@ public class PlayerController : MonoBehaviour
         idSpeed = Animator.StringToHash("Speed"); // animator.strigtohash es para comvertir cualquier string de texto en un valor numerico y asi no consume tanto recurso 
         idIsGrounded = Animator.StringToHash("IsGrounded");
         idIsWallDetected = Animator.StringToHash("IsWallDetected");
+        idKnockBack = Animator.StringToHash("KnockBack");
         lFoot = GameObject.Find("L_Foot").GetComponent<Transform>();
         rFoot = GameObject.Find("R_Foot").GetComponent<Transform>();
         counterExtraJump = extraJump;
@@ -73,6 +81,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
+        if (isKnocked) return;
         CheckCollision();
         Move();
         Jump();
@@ -170,6 +179,23 @@ public class PlayerController : MonoBehaviour
     {
         m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, jumpForce);
         counterExtraJump--;
+    }
+
+    public void KnowcBack()
+    {
+        StartCoroutine(KnockBackRutine());
+        m_rigidbody.linearVelocity = new Vector2 (knockedPower.x * - direction, knockedPower.y);
+        m_animator.SetTrigger(idKnockBack);
+    }
+
+    private IEnumerator KnockBackRutine()
+    {
+       isKnocked = true;
+       canBeKnocked = false;
+       yield return new WaitForSeconds(knockedDuration);
+       isKnocked = false;
+       canBeKnocked = true;
+
     }
 
     private void SetAnimatorValues()
