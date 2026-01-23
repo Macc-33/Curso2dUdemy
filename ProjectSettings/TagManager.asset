@@ -14,7 +14,7 @@ TagManager:
   - Player
   - Ground
   - ignore
-  - 
+  - Items
   - 
   - 
   - 
@@ -47,10 +47,13 @@ TagManager:
   - name: Decorations
     uniqueID: 4172837717
     locked: 0
+  - name: Items
+    uniqueID: 2977190365
+    locked: 0
   - name: Ground
     uniqueID: 160843107
     locked: 0
-  - name: Player
+  - name: ' '
     uniqueID: 4203904365
     locked: 0
   m_RenderingLayers:

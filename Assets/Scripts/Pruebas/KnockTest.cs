@@ -8,6 +8,7 @@ public class KnockTest : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             collision.GetComponent<PlayerController>().KnowcBack();
+            Debug.Log(GameManager.instance.PlayerController.name);
         }
     }
 }

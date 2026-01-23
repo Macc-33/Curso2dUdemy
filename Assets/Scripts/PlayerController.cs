@@ -60,6 +60,7 @@ public class PlayerController : MonoBehaviour
         m_rigidbody = GetComponent<Rigidbody2D>();
       //  m_transform = GetComponent<Transform>();
         m_animator = GetComponent<Animator>();
+       
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -71,6 +72,7 @@ public class PlayerController : MonoBehaviour
         lFoot = GameObject.Find("L_Foot").GetComponent<Transform>();
         rFoot = GameObject.Find("R_Foot").GetComponent<Transform>();
         counterExtraJump = extraJump;
+       // GameManager.instance.AddScore();
     }
 
     private void Update()
