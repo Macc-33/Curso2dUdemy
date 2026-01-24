@@ -46,6 +46,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Vector2 knockedPower;
     [SerializeField] private float knockedDuration;
 
+    [Header("DeadVFX")]
+    [SerializeField] private GameObject deathVfx;
+
 
     [Header("Animations settings")]
     private int idSpeed;
@@ -205,6 +208,12 @@ public class PlayerController : MonoBehaviour
         m_animator.SetFloat(idSpeed, Mathf.Abs(m_rigidbody.linearVelocityX));
         m_animator.SetBool(idIsGrounded, isGrounded);
         m_animator.SetBool(idIsWallDetected,isWallDetected);
+    }
+
+    public void Die() 
+    {
+        GameObject vfxPrefab = Instantiate(deathVfx,m_transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 
     private void OnDrawGizmos()
