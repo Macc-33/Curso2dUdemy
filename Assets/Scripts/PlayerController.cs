@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private int counterExtraJump;
 
     [Header("Move settings")]
+    [SerializeField] private bool canMove;
+    [SerializeField] private float moveDelay;
     [SerializeField] private float speed;
     private int direction = 1;   
 
@@ -63,8 +65,12 @@ public class PlayerController : MonoBehaviour
         m_rigidbody = GetComponent<Rigidbody2D>();
       //  m_transform = GetComponent<Transform>();
         m_animator = GetComponent<Animator>();
+
+        canMove = false;
+        StartCoroutine(CanMoveRotuine());
        
     }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -72,8 +78,6 @@ public class PlayerController : MonoBehaviour
         idIsGrounded = Animator.StringToHash("IsGrounded");
         idIsWallDetected = Animator.StringToHash("IsWallDetected");
         idKnockBack = Animator.StringToHash("KnockBack");
-        lFoot = GameObject.Find("L_Foot").GetComponent<Transform>();
-        rFoot = GameObject.Find("R_Foot").GetComponent<Transform>();
         counterExtraJump = extraJump;
        // GameManager.instance.AddScore();
     }
@@ -86,6 +90,7 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
+        if (!canMove) return;
         if (isKnocked) return;
         CheckCollision();
         Move();
@@ -130,11 +135,17 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
+        if (!canMove) return;
         if (isWallDetected && !isGrounded) return;
         if (isWasJumping) return;
         Flip();
         m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, m_rigidbody.linearVelocityY); //Movimiento en eje X del personaje 
 
+    }
+    IEnumerator CanMoveRotuine()
+    {
+        yield return new WaitForSeconds(moveDelay);
+        canMove = true;
     }
 
     private void Flip()

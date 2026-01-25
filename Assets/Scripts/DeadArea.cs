@@ -11,5 +11,6 @@ public class DeadArea : MonoBehaviour
         player = collision.gameObject.GetComponent<PlayerController>();
 
         if (collision.CompareTag("Player")) player.Die();
+        GameManager.instance.RespwnPlayer();
     }
 }
