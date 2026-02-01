@@ -23,7 +23,11 @@ public class DoorsEvent : MonoBehaviour
     // Update is called once per frame
    public void DoorOut()
     {
-        animatorEntranceDoor.SetTrigger(idOpenDoor);
-        Debug.Log("abriendo");
+        if (!GameManager.instance.hasCheckPointActive)
+        {
+            animatorEntranceDoor.SetTrigger(idOpenDoor);
+            Debug.Log("abriendo");
+        }
+   
     }
 }

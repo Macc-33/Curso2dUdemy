@@ -63,14 +63,8 @@ public class PlayerController : MonoBehaviour
     {
         m_gaderInput = GetComponent<GaderInput>();
         m_rigidbody = GetComponent<Rigidbody2D>();
-      //  m_transform = GetComponent<Transform>();
-        m_animator = GetComponent<Animator>();
-
-        canMove = false;
-        StartCoroutine(CanMoveRotuine());
-       
+        m_animator = GetComponent<Animator>();                    
     }
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -79,13 +73,29 @@ public class PlayerController : MonoBehaviour
         idIsWallDetected = Animator.StringToHash("IsWallDetected");
         idKnockBack = Animator.StringToHash("KnockBack");
         counterExtraJump = extraJump;
-       // GameManager.instance.AddScore();
+        CheckPlayerRespwnStated();
     }
-
+    private void CheckPlayerRespwnStated()
+    {
+        if (GameManager.instance.hasCheckPointActive)
+        {
+            startInCheckPoint();            
+        }
+        else
+        {
+            canMove = false;
+            StartCoroutine(CanMoveRotuine());
+        }
+    }
+    private void startInCheckPoint()
+    {
+        canMove = true;
+        m_animator.Play("Idle");
+        StartCoroutine(CanMoveRotuine());
+    }
     private void Update()
     {
-        SetAnimatorValues();
-        
+        SetAnimatorValues();        
     }
     // Update is called once per frame
     private void FixedUpdate()
@@ -96,7 +106,6 @@ public class PlayerController : MonoBehaviour
         Move();
         Jump();
     }
-
     private void CheckCollision()
     {
         HandleGround(); //Detectar suelo ....traducido
@@ -140,20 +149,18 @@ public class PlayerController : MonoBehaviour
         if (isWasJumping) return;
         Flip();
         m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, m_rigidbody.linearVelocityY); //Movimiento en eje X del personaje 
-
     }
     IEnumerator CanMoveRotuine()
-    {
+    {        
         yield return new WaitForSeconds(moveDelay);
         canMove = true;
     }
-
     private void Flip()
     {
-       if(m_gaderInput.Value.x * direction < 0)
-        {
+      if(m_gaderInput.Value.x * direction < 0)
+       {
             HandleDirection();
-        }
+       }
     }
 
     private void HandleDirection()
@@ -186,8 +193,7 @@ public class PlayerController : MonoBehaviour
 
     IEnumerator WallJumpRutine()
     {
-        isWasJumping = true;
-        
+        isWasJumping = true;        
         yield return new WaitForSeconds(wallJumpDuration);
         isWasJumping = false;
     }
@@ -211,7 +217,6 @@ public class PlayerController : MonoBehaviour
        yield return new WaitForSeconds(knockedDuration);
        isKnocked = false;
        canBeKnocked = true;
-
     }
 
     private void SetAnimatorValues()
