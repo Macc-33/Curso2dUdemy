@@ -203,15 +203,16 @@ public class PlayerController : MonoBehaviour
     {
         StartCoroutine(KnockBackRutine());
         m_rigidbody.linearVelocity = new Vector2 (knockedPower.x * - direction, knockedPower.y);
-        m_animator.SetTrigger(idKnockBack);
+        //m_animator.SetTrigger(idKnockBack);
     }
     private IEnumerator KnockBackRutine()
     {
        isKnocked = true;
-       canBeKnocked = false;
+       m_animator.SetBool(idKnockBack, isKnocked);
        yield return new WaitForSeconds(knockedDuration);
        isKnocked = false;
-       canBeKnocked = true;
+       m_animator.SetBool(idKnockBack, isKnocked);
+
     }
     private void SetAnimatorValues()
     {

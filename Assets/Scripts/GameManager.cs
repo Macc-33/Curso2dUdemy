@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     [Header("DiamondItems")]
     [SerializeField] private bool diamondHaveRandomLook;
     [SerializeField] private int _diamondCollected;
+    [SerializeField] private int totalDiamonds;
     public int DiamondCollected { get => _diamondCollected; }
     public bool DiamondHaveRandomLook1 { get => diamondHaveRandomLook; set => diamondHaveRandomLook = value; }
 
@@ -26,6 +27,11 @@ public class GameManager : MonoBehaviour
     {
         if (instance == null) instance = this;
         else Destroy(gameObject);
+    }
+    private void Start()
+    {
+        GameObject[] diamonds = GameObject.FindGameObjectsWithTag("Diamond");
+        totalDiamonds = diamonds.Length;
     }
     public void RespwnPlayer()
     {

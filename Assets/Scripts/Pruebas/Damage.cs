@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class KnockTest : MonoBehaviour
+public class Damage : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void OnTriggerEnter2D(Collider2D collision)
@@ -8,7 +8,7 @@ public class KnockTest : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             collision.GetComponent<PlayerController>().KnowcBack();
-            Debug.Log(GameManager.instance.PlayerController.name);
+            Debug.Log(collision.name);
         }
     }
 }

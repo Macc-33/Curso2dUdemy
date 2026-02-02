@@ -242,7 +242,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac52ca392a744464cbaacdfbbd7d0b67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  m_playerController: {fileID: 9145006096588915932}
   m_transform: {fileID: 3228613570312465455}
   jumpForce: 10
   extraJump: 1
