@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEditor.Tilemaps;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -57,6 +58,8 @@ public class PlayerController : MonoBehaviour
     private int idIsGrounded;
     private int idIsWallDetected;
     private int idKnockBack;
+    private int idIdle;
+    private int idDoorIn;
 
 
     private void Awake()
@@ -72,6 +75,8 @@ public class PlayerController : MonoBehaviour
         idIsGrounded = Animator.StringToHash("IsGrounded");
         idIsWallDetected = Animator.StringToHash("IsWallDetected");
         idKnockBack = Animator.StringToHash("KnockBack");
+        idIdle = Animator.StringToHash("Idle");
+        idDoorIn = Animator.StringToHash("DoorIn");
         counterExtraJump = extraJump;
         CheckPlayerRespwnStated();
     }
@@ -127,7 +132,6 @@ public class PlayerController : MonoBehaviour
             isGrounded = false;
         }
     }
-
     private void HandleWall()
     {
         isWallDetected = Physics2D.Raycast(m_transform.position, Vector2.right * direction, checkWallDistance, groundLayer);
@@ -139,9 +143,6 @@ public class PlayerController : MonoBehaviour
         speedSlice = m_gaderInput.Value.y < 0 ? 1 : 0.5f;
         m_rigidbody.linearVelocity = new Vector2 (m_rigidbody.linearVelocity.x, m_rigidbody.linearVelocity.y * speedSlice);
     }
-
-
-
     private void Move()
     {
         if (!canMove) return;
@@ -162,13 +163,11 @@ public class PlayerController : MonoBehaviour
             HandleDirection();
        }
     }
-
     private void HandleDirection()
     {
         m_transform.localScale = new Vector3(-m_transform.localScale.x, 1, 1);
         direction *= -1;
     }
-
     private void Jump()
     {
         if(m_gaderInput.IsJumping)
@@ -179,8 +178,7 @@ public class PlayerController : MonoBehaviour
                 canDoubleJump = true;
             }
             else if (isWallDetected) WallJump();
-            else if (counterExtraJump > 0 && canDoubleJump) DobleJump();
-           
+            else if (counterExtraJump > 0 && canDoubleJump) DobleJump();          
         }
         m_gaderInput.IsJumping = false;
     }
@@ -190,7 +188,6 @@ public class PlayerController : MonoBehaviour
         HandleDirection();
         StartCoroutine(WallJumpRutine());
     }
-
     IEnumerator WallJumpRutine()
     {
         isWasJumping = true;        
@@ -202,14 +199,12 @@ public class PlayerController : MonoBehaviour
         m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, jumpForce);
         counterExtraJump--;
     }
-
     public void KnowcBack()
     {
         StartCoroutine(KnockBackRutine());
         m_rigidbody.linearVelocity = new Vector2 (knockedPower.x * - direction, knockedPower.y);
         m_animator.SetTrigger(idKnockBack);
     }
-
     private IEnumerator KnockBackRutine()
     {
        isKnocked = true;
@@ -218,22 +213,33 @@ public class PlayerController : MonoBehaviour
        isKnocked = false;
        canBeKnocked = true;
     }
-
     private void SetAnimatorValues()
     {
         m_animator.SetFloat(idSpeed, Mathf.Abs(m_rigidbody.linearVelocityX));
         m_animator.SetBool(idIsGrounded, isGrounded);
         m_animator.SetBool(idIsWallDetected,isWallDetected);
     }
-
     public void Die() 
     {
         GameObject vfxPrefab = Instantiate(deathVfx,m_transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
-
+    internal void DoorIn()
+    {
+        m_rigidbody.linearVelocity = Vector2.zero;
+        m_animator.Play(idIdle);
+        m_animator.SetBool(idDoorIn, true);
+        canMove = false;
+        StartCoroutine(DoorInRotuine());
+    }
+    private IEnumerator DoorInRotuine()
+    {
+      yield return new WaitForSeconds(moveDelay);
+        SceneManager.LoadScene(0);
+    }
     private void OnDrawGizmos()
     {
         Gizmos.DrawLine(m_transform.position, new Vector2(m_transform.position.x + checkWallDistance * direction, m_transform.position.y));
     }
+
 }
