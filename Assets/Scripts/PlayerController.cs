@@ -47,7 +47,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private bool isKnocked;
     [SerializeField] private bool canBeKnocked;
     [SerializeField] private Vector2 knockedPower;
+    [SerializeField] private Vector2 defaulKnockedPower;
     [SerializeField] private float knockedDuration;
+    public Vector2 KnockedPower { get => knockedPower; set => knockedPower = value; }
 
     [Header("DeadVFX")]
     [SerializeField] private GameObject deathVfx;
@@ -61,6 +63,7 @@ public class PlayerController : MonoBehaviour
     private int idIdle;
     private int idDoorIn;
 
+   
 
     private void Awake()
     {
@@ -199,10 +202,15 @@ public class PlayerController : MonoBehaviour
         m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, jumpForce);
         counterExtraJump--;
     }
-    public void KnowcBack()
+    public void KnowcBack(float sourceDamageXPosition)
     {
+        float direction = 1;
+
+        if(transform.position.x < sourceDamageXPosition)
+            direction = -1;
+
         StartCoroutine(KnockBackRutine());
-        m_rigidbody.linearVelocity = new Vector2 (knockedPower.x * - direction, knockedPower.y);
+        m_rigidbody.linearVelocity = new Vector2 (knockedPower.x *  direction, knockedPower.y);
         //m_animator.SetTrigger(idKnockBack);
     }
     private IEnumerator KnockBackRutine()
@@ -212,6 +220,7 @@ public class PlayerController : MonoBehaviour
        yield return new WaitForSeconds(knockedDuration);
        isKnocked = false;
        m_animator.SetBool(idKnockBack, isKnocked);
+       knockedPower = new Vector2(defaulKnockedPower.x, defaulKnockedPower.y);
 
     }
     private void SetAnimatorValues()

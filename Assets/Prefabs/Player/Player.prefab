@@ -265,7 +265,8 @@ MonoBehaviour:
   wallJumpDuration: 0.5
   isKnocked: 0
   canBeKnocked: 0
-  knockedPower: {x: 3, y: 0}
+  knockedPower: {x: 0, y: 0}
+  defaulKnockedPower: {x: 3, y: 0}
   knockedDuration: 0.6
   deathVfx: {fileID: 5515441878203045759, guid: d886708221d95e8479bf0c835f42f38b, type: 3}
 --- !u!114 &8159775981202770554
