@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpForce;
     [SerializeField] private int extraJump;
     [SerializeField] private int counterExtraJump;
+   
 
     [Header("Move settings")]
     [SerializeField] private bool canMove;
@@ -30,7 +31,7 @@ public class PlayerController : MonoBehaviour
     RaycastHit2D lFootRay;
     RaycastHit2D rFootRay;
     [SerializeField] private bool isGrounded;
-    private bool canDoubleJump;
+    [SerializeField] private bool canDoubleJump;
     [SerializeField] private float rayLength;
     [SerializeField] private LayerMask groundLayer;
 
@@ -63,7 +64,8 @@ public class PlayerController : MonoBehaviour
     private int idIdle;
     private int idDoorIn;
 
-   
+    
+
 
     private void Awake()
     {
@@ -82,6 +84,7 @@ public class PlayerController : MonoBehaviour
         idDoorIn = Animator.StringToHash("DoorIn");
         counterExtraJump = extraJump;
         CheckPlayerRespwnStated();
+       
     }
     private void CheckPlayerRespwnStated()
     {
@@ -108,11 +111,18 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        if (!canMove) return;
+        if (!canMove)
+        {
+            HandleWall();
+            handelWallSlide();
+            SetAnimatorValues();
+            return;
+        }
         if (isKnocked) return;
         CheckCollision();
         Move();
         Jump();
+       
     }
     private void CheckCollision()
     {
@@ -181,8 +191,11 @@ public class PlayerController : MonoBehaviour
                 canDoubleJump = true;
             }
             else if (isWallDetected) WallJump();
-            else if (counterExtraJump > 0 && canDoubleJump) DobleJump();          
+            else if (counterExtraJump > 0 && canDoubleJump) DobleJump();
+           
+
         }
+  
         m_gaderInput.IsJumping = false;
     }
     private void WallJump()
@@ -234,6 +247,22 @@ public class PlayerController : MonoBehaviour
         GameObject vfxPrefab = Instantiate(deathVfx,m_transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
+
+    public void Push(Vector2 direction , float duration = 0)
+    {
+        StartCoroutine(PushCoroutine(direction,duration));
+    }
+
+    public IEnumerator PushCoroutine(Vector2 direction, float duration)
+    {
+        canDoubleJump = true;
+        canMove = false;       
+        m_rigidbody.linearVelocity = Vector2.zero;
+        m_rigidbody.AddForce(direction, ForceMode2D.Impulse);
+        yield return new WaitForSeconds(duration);                
+        canMove = true;
+    }
+
     internal void DoorIn()
     {
         m_rigidbody.linearVelocity = Vector2.zero;
