@@ -23,7 +23,7 @@ public class TrampolineController : MonoBehaviour
             return;
 
         var player = collision.GetComponent<PlayerController>();
-        if (player == null)
+        if (player == null )
             return;
 
         player.Push(transform.up * forceDirection, duration);
@@ -32,23 +32,5 @@ public class TrampolineController : MonoBehaviour
             m_Animator.SetTrigger(idTrampolineActive);
            
     }
-    /* private Animator m_Animator ;
-     [SerializeField] private Vector2 direction;
-     [SerializeField] private float duration = 0.5f;
 
-
-     private void Awake()
-     {
-        m_Animator.GetComponent<Animator>();
-
-     }
-     private void OnTriggerEnter2D(Collider2D collision)
-     {
-         PlayerController player = collision.GetComponent<PlayerController>();
-         if(player.CompareTag("Player"))
-         {
-             player.Push(direction, duration);
-             m_Animator.SetTrigger("TrampolineActive");
-         }
-     }*/
 }

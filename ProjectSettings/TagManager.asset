@@ -53,11 +53,11 @@ TagManager:
   - name: Items
     uniqueID: 2977190365
     locked: 0
+  - name: Traps
+    uniqueID: 4203904365
+    locked: 0
   - name: Ground
     uniqueID: 160843107
-    locked: 0
-  - name: ' '
-    uniqueID: 4203904365
     locked: 0
   m_RenderingLayers:
   - Default

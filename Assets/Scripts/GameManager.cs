@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -13,13 +14,16 @@ public class GameManager : MonoBehaviour
     public PlayerController PlayerController { get => _playerController; }
 
     [Header("Respwn Settings")]
-    public bool hasCheckPointActive = false ; 
+    public bool hasCheckPointActive = false;
     public Vector3 checkPointRespwnPosition;
 
     [Header("DiamondItems")]
     [SerializeField] private bool diamondHaveRandomLook;
     [SerializeField] private int _diamondCollected;
     [SerializeField] private int totalDiamonds;
+
+    [Header("Traps")]
+    public GameObject arrowPrefab;
     public int DiamondCollected { get => _diamondCollected; }
     public bool DiamondHaveRandomLook1 { get => diamondHaveRandomLook; set => diamondHaveRandomLook = value; }
 
@@ -35,26 +39,38 @@ public class GameManager : MonoBehaviour
     }
     public void RespwnPlayer()
     {
-        if(hasCheckPointActive) playerRespwnPoint.position = checkPointRespwnPosition;
+        if (hasCheckPointActive) playerRespwnPoint.position = checkPointRespwnPosition;
         StartCoroutine(RespwnPlayerCoroutine());
-    }  
+    }
     IEnumerator RespwnPlayerCoroutine()
     {
-       if(!hasCheckPointActive)
+        if (!hasCheckPointActive)
         {
             yield return new WaitForSeconds(respwnPlayerDelay);
             GameObject newPlayer = Instantiate(playerPrefab, playerRespwnPoint.position, Quaternion.identity);
             newPlayer.name = ("Player");
             _playerController = newPlayer.GetComponent<PlayerController>();
         }
-       else
+        else
         {
             GameObject newPlayer = Instantiate(playerPrefab, playerRespwnPoint.position, Quaternion.identity);
             newPlayer.name = ("Player");
             _playerController = newPlayer.GetComponent<PlayerController>();
         }
-       
+
     }
+    public void CreateObject(GameObject prefab, Transform target, float delay)
+    {
+        StartCoroutine(CreateObjectRoutine(prefab,target,delay));
+    }
+
+    private IEnumerator CreateObjectRoutine(GameObject prefab, Transform target, float delay)
+    {
+        Vector3 newPosition = target.position;
+        yield return new WaitForSeconds(delay);
+        GameObject newObject = Instantiate(prefab, newPosition, Quaternion.identity);
+    }
+
     public void AddDiamond() => _diamondCollected++;
     public void DiamondHaveRandomLook() => DiamondHaveRandomLook1 = true;
     
