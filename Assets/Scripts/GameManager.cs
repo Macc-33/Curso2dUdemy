@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Traps")]
     public GameObject arrowPrefab;
+    public GameObject fallingPlatformPrefab;
     public int DiamondCollected { get => _diamondCollected; }
     public bool DiamondHaveRandomLook1 { get => diamondHaveRandomLook; set => diamondHaveRandomLook = value; }
 
@@ -59,16 +60,16 @@ public class GameManager : MonoBehaviour
         }
 
     }
-    public void CreateObject(GameObject prefab, Transform target, float delay)
+    public void CreateObject(GameObject prefab, Vector3 position, float delay)
     {
-        StartCoroutine(CreateObjectRoutine(prefab,target,delay));
+        StartCoroutine(CreateObjectRoutine(prefab,position,delay));
     }
 
-    private IEnumerator CreateObjectRoutine(GameObject prefab, Transform target, float delay)
+    private IEnumerator CreateObjectRoutine(GameObject prefab, Vector3 position, float delay)
     {
-        Vector3 newPosition = target.position;
+        
         yield return new WaitForSeconds(delay);
-        GameObject newObject = Instantiate(prefab, newPosition, Quaternion.identity);
+        GameObject newObject = Instantiate(prefab, position, Quaternion.identity);
     }
 
     public void AddDiamond() => _diamondCollected++;

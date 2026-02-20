@@ -44,7 +44,8 @@ public class ArrowController : TrampolineController
     public void DestroyMe()
     {
         GameObject arrowPrefab = GameManager.instance.arrowPrefab;
-        GameManager.instance.CreateObject(arrowPrefab, transform,respwnTime);
+        Vector3 respwnPosition = transform.position;
+        GameManager.instance.CreateObject(arrowPrefab, respwnPosition,respwnTime);
         Destroy(gameObject);
     }
 
