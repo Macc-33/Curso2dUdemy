@@ -7,6 +7,8 @@ TagManager:
   - EntranceDoor
   - ExitDoor
   - Diamond
+  - PlayerDamage_1
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -19,7 +21,7 @@ TagManager:
   - ignore
   - Items
   - Traps
-  - 
+  - Enemy
   - 
   - 
   - 
