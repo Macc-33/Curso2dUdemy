@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5615843658311935102}
   - component: {fileID: 6532283923657437305}
   - component: {fileID: 5738048077999933965}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Fire_Buttom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -238,7 +238,7 @@ GameObject:
   - component: {fileID: 8296799220805169143}
   - component: {fileID: 7736561937169760146}
   - component: {fileID: 3282831466435611714}
-  m_Layer: 7
+  m_Layer: 10
   m_Name: Fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}

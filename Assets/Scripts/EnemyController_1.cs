@@ -22,11 +22,14 @@ public class EnemyController_1 : MonoBehaviour
     [Header("Atack Settings")]
     [SerializeField] private float atackSpeed;
     [SerializeField] private bool canAtack;
+    [SerializeField] private bool isAtack;
+    [SerializeField] private PlayerController _playerController;
     [SerializeField] private EnemyPlayerDetect _enemyPlayerDetect;
-    [SerializeField] public Transform player;
+    [SerializeField] private DamageEnemy_1 _damageEnemy_1;
+    [SerializeField] private Transform playerPoint;
     [Space]
     [Header("HitBack Settings ")]
-    [SerializeField] private bool isKnocked;
+    [SerializeField] public bool isKnocked;
     [SerializeField] private Vector2 knockedPower;
     [SerializeField] private Vector2 defaulKnockedPower;
     [SerializeField] private float knockedDuration;
@@ -34,19 +37,24 @@ public class EnemyController_1 : MonoBehaviour
     [Header("Animations Settings ")]
     private int idEnemyRun = Animator.StringToHash("EnemyRun");
     private int idKnockBack = Animator.StringToHash("HitBack");
+    private int idOnAtack = Animator.StringToHash("OnAtack");
 
     private void Awake()
     {
         _Rigidbody = GetComponent<Rigidbody2D>();
         _Animator = GetComponent<Animator>();
         _SpriteRenderer = GetComponent<SpriteRenderer>();
-        _enemyPlayerDetect = GetComponentInChildren<EnemyPlayerDetect>();       
+        //_playerController = FindObjectOfType<PlayerController>();
+        _playerController = FindAnyObjectByType<PlayerController>();
+        _enemyPlayerDetect = GetComponentInChildren<EnemyPlayerDetect>();
+        _damageEnemy_1 = GetComponentInChildren<DamageEnemy_1>();
+        playerPoint = _playerController.Transform;
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
        canMove= true;
-       canAtack = false;
+       canAtack = false;        
        UpdateWayPoint();
        indexWayPoints = 1;
        transform.position = myWayPointsPosition[0];
@@ -63,81 +71,71 @@ public class EnemyController_1 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {       
-        Flip();        
         if (!canMove) return; 
         if(isKnocked) return;
         Movenment();  
         Atack();
-        //Debug.Log();
+        if (_enemyPlayerDetect.NewUpdatePointposition)
+        {
+            UpdateWayPoint();      
+            _enemyPlayerDetect.NewUpdatePointposition = false;
+        }
     }
+
+    private void FixedUpdate()
+    {
+        Flip();
+        StopBetweenPoints();
+        SetAnimationValues();
+    }
+  
     private void Flip()
     {
-        /*if (moveDirection == -1) spriteRenderer.flipX = true;
-        if (moveDirection == 1) spriteRenderer.flipX = false;*/
-
         float direction;
 
-        if (canAtack && player != null)
-        {
-            direction = player.position.x - transform.position.x;
-        }
+        if (canAtack && playerPoint != null)
+            direction = playerPoint.position.x - transform.position.x;
         else
-        {
             direction = myWayPointsPosition[indexWayPoints].x - transform.position.x;
-        }
 
-        if (direction > 0)
-        {
-            StartCoroutine(FlipDelayCorutine(flipDelay));
-            _SpriteRenderer.flipX = true;
-        }                       
-        else if (direction < 0)
-        {
-            StartCoroutine(FlipDelayCorutine(flipDelay));
-            _SpriteRenderer.flipX = false;
-        }
-            
+        _SpriteRenderer.flipX = direction > 0;
     }
     private IEnumerator FlipDelayCorutine(float delay)
     {
         yield return new WaitForSeconds(1);
     }
     private void Movenment()
+    {        
+        EnemyRutine();       
+    }
+    void EnemyRutine()
     {
-        if(isKnocked) return;
-        canAtack = _enemyPlayerDetect.canAtack;
+        if (isKnocked) return;
+        canAtack = _enemyPlayerDetect.CanAtack;
         if (canAtack == true) return;
 
         float direction = Mathf.Sign(myWayPointsPosition[indexWayPoints].x - transform.position.x);
 
         _Rigidbody.linearVelocity = new Vector2(direction * normalSpeed, _Rigidbody.linearVelocity.y);
-
-        //transform.position = Vector2.MoveTowards(transform.position, myWayPointsPosition[indexWayPoints], normalSpeed * Time.deltaTime);                       
-        //transform.position = Vector2.MoveTowards(transform.position, player.transform.position , speed * Time.deltaTime) ;        
-    }
-    private void FixedUpdate()
-    {
-        StopBetweenPoints();
-        SetAnimationValues();
     }
 
     private void StopBetweenPoints()
     {
         if (canAtack) return;
         if(isKnocked) return ;
-        if (Vector2.Distance(transform.position, myWayPointsPosition[indexWayPoints]) < 0.1)
+        if (Vector2.Distance(transform.position, myWayPointsPosition[indexWayPoints]) < 0.3)
         {
             if (indexWayPoints == myWayPointsPosition.Length - 1 || indexWayPoints == 0)
             {
 
-                StartCoroutine(StopMovenment(waitForMove));
+                StartCoroutine(StopBetweenPointsRoutine(waitForMove));
               
             }
             indexWayPoints = indexWayPoints + moveDirection;
         }
     }
 
-    IEnumerator StopMovenment(float delayTime)
+    IEnumerator StopBetweenPointsRoutine(float delayTime)
     {
         canMove = false;
         moveDirection = moveDirection * -1;
@@ -148,16 +146,18 @@ public class EnemyController_1 : MonoBehaviour
     private void SetAnimationValues()
     {
         _Animator.SetBool(idEnemyRun, canMove);
-        _Animator.SetBool(idKnockBack, isKnocked);      
+        _Animator.SetBool(idKnockBack, isKnocked);  
+        _Animator.SetBool(idOnAtack, isAtack);
     }
     private void Atack()
     {
+        if (playerPoint == null) return;
         if (!canAtack) return;
         if (isKnocked) return;
+        isAtack = _damageEnemy_1.IsAtack;
+        float direction = Mathf.Sign(playerPoint.position.x - transform.position.x);
 
-        float direction = Mathf.Sign(player.position.x - transform.position.x);
-
-        _Rigidbody.linearVelocity = new Vector2(direction * atackSpeed, _Rigidbody.linearVelocity.y);
+        _Rigidbody.linearVelocity = new Vector2(direction * atackSpeed, _Rigidbody.linearVelocity.y);     
     }
     public void KnowcBack(float sourceDamageXPosition)
     {     

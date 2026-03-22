@@ -34,11 +34,12 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.82, y: -0.43000007, z: 0}
-  m_LocalScale: {x: 0.9787, y: 0.988, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8976061282563689287}
   - {fileID: 210283867155244473}
+  - {fileID: 7731367540808037522}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &8565433571419872557
@@ -87,7 +88,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: -91062931
-  m_SortingLayer: 5
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: 4236677631525818213, guid: 3616bab2e0fcadb4fb282c39b8097b1e, type: 3}
@@ -230,6 +231,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GaderInput
   _value: {x: 0, y: 0}
   _isJumping: 0
+  _isAtack: 0
 --- !u!114 &9145006096588915932
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,12 +248,13 @@ MonoBehaviour:
   jumpForce: 10
   extraJump: 1
   counterExtraJump: 0
-  canMove: 0
+  canMove: 1
   moveDelay: 3
   speed: 3.5
   rFoot: {fileID: 8976061282563689287}
   lFoot: {fileID: 210283867155244473}
   isGrounded: 0
+  canDoubleJump: 0
   rayLength: 0.05
   groundLayer:
     serializedVersion: 2
@@ -268,6 +271,11 @@ MonoBehaviour:
   knockedPower: {x: 0, y: 0}
   defaulKnockedPower: {x: 3, y: 0}
   knockedDuration: 0.6
+  m_ColliderDamage: {fileID: 0}
+  atackColliderDelay: 0.2
+  canHit: 0
+  canAtackDelay: 1
+  isAtack: 0
   deathVfx: {fileID: 5515441878203045759, guid: d886708221d95e8479bf0c835f42f38b, type: 3}
 --- !u!114 &8159775981202770554
 MonoBehaviour:
@@ -345,3 +353,84 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3228613570312465455}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6367016752272072358
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7731367540808037522}
+  - component: {fileID: 6970661389134624582}
+  - component: {fileID: 6751558706512496735}
+  m_Layer: 6
+  m_Name: Atack_1
+  m_TagString: PlayerDamage_1
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7731367540808037522
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367016752272072358}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3228613570312465455}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!58 &6970661389134624582
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367016752272072358}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0.62, y: 0}
+  m_Radius: 0.8
+--- !u!114 &6751558706512496735
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367016752272072358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f42fd5b48245c2f44a9d9f8f61455bb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Atack_1

@@ -4,36 +4,39 @@ using UnityEngine;
 
 public class EnemyPlayerDetect : MonoBehaviour
 {
-    [SerializeField] public bool canAtack = false;
+    [Header("Detect Components")]
+    [Space]
+    [SerializeField] private bool canAtack = false;
+    public bool CanAtack { get => canAtack;  }
+    [Space]
     [SerializeField] public PlayerController player;
-    [SerializeField] private CircleCollider2D _CircleCollider;
+    [SerializeField] private CircleCollider2D _CircleColliderAtack;
     [SerializeField] private float colliderDelay = 1.0f;
-    private EnemyController_1 _Enemy;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    [Space]
+    [SerializeField] private bool newUpdatePointposition;
+    public bool NewUpdatePointposition { get => newUpdatePointposition; set => newUpdatePointposition = value; }
+    
 
     private void Start()
     {
-        _CircleCollider = GetComponent<CircleCollider2D>();
-        _Enemy = GetComponentInParent<EnemyController_1>();
+        _CircleColliderAtack = GetComponent<CircleCollider2D>();
+        newUpdatePointposition = false;
     }
     public void OnTriggerEnter2D(Collider2D collision)
-    {
-       
+    {       
         if (collision.CompareTag("Player"))
-        {
-            player = collision.gameObject.GetComponent<PlayerController>();
-            //_Enemy.player = player.transform;
+        {           
             StartCoroutine(ColliderCorutine());            
-        }
-                
+        }                
     }
-
     private IEnumerator ColliderCorutine()
     {
         canAtack = true;
-        _CircleCollider.enabled = false;
+        _CircleColliderAtack.enabled = false;
         yield return new WaitForSeconds(colliderDelay);
-        _CircleCollider.enabled = true;
+        _CircleColliderAtack.enabled = true;
         canAtack = false;
+        newUpdatePointposition = true;
     }
 }
+

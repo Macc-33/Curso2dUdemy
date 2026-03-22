@@ -1,17 +1,18 @@
-using System;
+﻿using System;
 using System.Collections;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
-{
+{     
     //Components del player controller
     [Header("Components")]
-    [SerializeField]private Transform m_transform;
     private Rigidbody2D m_rigidbody;
     private GaderInput m_gaderInput;
     private Animator m_animator;
+    [SerializeField] private Transform m_transform;
+    public Transform Transform { get => m_transform; set => m_transform = value; }
     [Space]
     [Header("jumps settings")]
     [SerializeField] private float jumpForce;
@@ -45,16 +46,22 @@ public class PlayerController : MonoBehaviour
     [Space]
     [Header("Hit Settings")]
     [SerializeField] private bool isKnocked;
+    public bool IsKnocked {  set => isKnocked = value; }
     [SerializeField] private bool canBeKnocked;
     [SerializeField] private Vector2 knockedPower;
+    public Vector2 KnockedPower {  set => knockedPower = value; }
+
     [SerializeField] private Vector2 defaulKnockedPower;
     [SerializeField] private float knockedDuration;
-    public Vector2 KnockedPower { get => knockedPower; set => knockedPower = value; }
+
     [Space]
     [Header("Atack Settings")]
     [SerializeField] CircleCollider2D m_ColliderDamage;
-    [SerializeField] private float atackDelay = 0.2f;
-    public  bool isAtack ; // no la puedo volver privada por que no funciona 
+    [SerializeField] private float atackColliderDelay = 0.2f;
+    [SerializeField] private bool canHit;
+    [SerializeField] private float canAtackDelay;
+    [SerializeField] private  bool isAtack ; // no la puedo volver privada por que no funciona 
+    public bool IsAtack { get => isAtack; set => isAtack = value; }
 
     [Space]
     [Header("DeadVFX")]
@@ -68,6 +75,15 @@ public class PlayerController : MonoBehaviour
     private int idIdle;
     private int idDoorIn;
     private int idIsAtack;
+    private enum PlayerState
+    {
+        Idle,
+        Move,
+        Jump,
+        WallSlide,
+        Attack
+    }
+    private PlayerState currentState;
 
     private void Awake()
     {
@@ -75,11 +91,11 @@ public class PlayerController : MonoBehaviour
         m_rigidbody = GetComponent<Rigidbody2D>();
         m_animator = GetComponent<Animator>();  
         m_ColliderDamage = GetComponentInChildren<CircleCollider2D>();
-
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        currentState = PlayerState.Idle;
         idSpeed = Animator.StringToHash("Speed"); // animator.strigtohash es para comvertir cualquier string de texto en un valor numerico y asi no consume tanto recurso 
         idIsGrounded = Animator.StringToHash("IsGrounded");
         idIsWallDetected = Animator.StringToHash("IsWallDetected");
@@ -88,12 +104,71 @@ public class PlayerController : MonoBehaviour
         idDoorIn = Animator.StringToHash("DoorIn");
         idIsAtack = Animator.StringToHash("IsAtack");
         counterExtraJump = extraJump;
-        m_ColliderDamage.enabled = false ; //Desactivar collider de da�o
+        m_ColliderDamage.enabled = false ; //Desactivar collider de daño
         isAtack = false;
+        canHit = true;
+        canMove = true;
         CheckPlayerRespwnStated();       
+    }
+    private void HandleStateTransitions()
+    {
+        if (!canMove) return;
+
+        if (currentState == PlayerState.Attack && isAtack)
+            return;
+
+        // PRIORIDAD 1 — ATAQUE
+        if (m_gaderInput.IsAtack && canHit)
+        {
+            ChangeState(PlayerState.Attack);
+            return;
+        }
+        // PRIORIDAD 2 — salto
+        if (m_gaderInput.IsJumping)
+        {
+            ChangeState(PlayerState.Jump);
+            return;
+        }
+        // PRIORIDAD 3 — wall slide
+        if (isWallDetected && !isGrounded)
+        {
+            ChangeState(PlayerState.WallSlide);
+            return;
+        }
+        
+        // PRIORIDAD 4 — si está en el aire salto 
+        if (!isGrounded)
+        {
+            ChangeState(PlayerState.Jump);
+            return;
+        }
+
+        // PRIORIDAD 5 — si está movimiento
+        if (m_gaderInput.Value.x != 0)
+        {
+            ChangeState(PlayerState.Move);
+        }
+        else
+        {
+            ChangeState(PlayerState.Idle);
+        }
+
+        Debug.Log(currentState);
+    }
+
+    private void ChangeState(PlayerState newState)
+    {
+        if (currentState == newState) return;
+
+        currentState = newState;
     }
     private void CheckPlayerRespwnStated()
     {
+        if (GameManager.instance == null)
+        {
+            Debug.LogError("GameManager.instance es NULL");
+            return;
+        }
         if (GameManager.instance.hasCheckPointActive)
         {
             startInCheckPoint();            
@@ -101,20 +176,28 @@ public class PlayerController : MonoBehaviour
         else
         {
             canMove = false;
-            StartCoroutine(CanMoveRotuine());
+            StartCoroutine(CanMoveRotuine());           
         }
     }
     private void startInCheckPoint()
-    {
-        canMove = true;
+    {        
         m_animator.Play("Idle");
         StartCoroutine(CanMoveRotuine());
+    }
+    IEnumerator CanMoveRotuine()
+    {        
+        yield return new WaitForSeconds(moveDelay);
+        canMove = true;
     }
     private void Update()
     {
         SetAnimatorValues();
-        Atack();
-        
+    }
+    private void SetAnimatorValues()
+    {
+        m_animator.SetFloat(idSpeed, Mathf.Abs(m_rigidbody.linearVelocityX));
+        m_animator.SetBool(idIsGrounded, isGrounded);
+        m_animator.SetBool(idIsWallDetected, isWallDetected);
     }
     // Update is called once per frame
     private void FixedUpdate()
@@ -123,21 +206,61 @@ public class PlayerController : MonoBehaviour
         {
             HandleWall();
             handelWallSlide();
-            SetAnimatorValues();
+            //SetAnimatorValues();
             return;
         }
         if (isKnocked) return;
         CheckCollision();
-        Move();
-        Jump();
-        
-       
+       HandleStateTransitions();
+
+        switch (currentState)
+        {
+            case PlayerState.Idle:
+                Move();
+                break;
+
+            case PlayerState.Move:
+                Move();
+                break;
+
+            case PlayerState.Jump:
+                Move();   // ← permite movimiento en el aire
+                Jump();   // ← lógica de salto
+                break;
+
+            case PlayerState.WallSlide:
+                handelWallSlide();
+                break;
+
+            case PlayerState.Attack:
+                HandleAttackState();
+                break;
+        }
+        //Move();
+        //Jump();
+        //Atack();                       
     }
+
+    private void HandleAttackState()
+    {
+        Move(); // opcional, si quieres permitir movimiento durante ataque
+
+        if (!isAtack && canHit)
+        {
+            StartCoroutine(AtackRutine());
+            StartCoroutine(CanAtackRoutine());
+
+            m_animator.SetTrigger(idIsAtack);
+
+            m_gaderInput.IsAtack = false;
+        }
+    }
+
     private void CheckCollision()
     {
         HandleGround(); //Detectar suelo ....traducido
         HandleWall(); //Detectar paretes 
-        handelWallSlide();
+       // handelWallSlide();
     }
     private void HandleGround()
     {
@@ -173,19 +296,14 @@ public class PlayerController : MonoBehaviour
         Flip();
         m_rigidbody.linearVelocity = new Vector2(speed * m_gaderInput.Value.x, m_rigidbody.linearVelocityY); //Movimiento en eje X del personaje 
     }
-    IEnumerator CanMoveRotuine()
-    {        
-        yield return new WaitForSeconds(moveDelay);
-        canMove = true;
-    }
     private void Flip()
     {
       if(m_gaderInput.Value.x * direction < 0)
        {
-            HandleDirection();
+            HandleFlipDirection();
        }
     }
-    private void HandleDirection()
+    private void HandleFlipDirection()
     {
         m_transform.localScale = new Vector3(-m_transform.localScale.x, 1, 1);
         direction *= -1;
@@ -205,32 +323,39 @@ public class PlayerController : MonoBehaviour
         m_gaderInput.IsJumping = false;
     }
     private void Atack()
-    {
-        
+    {        
         if (canWallSlide && !isGrounded) return;
         if (isKnocked) return;
-        if (m_gaderInput.IsAtack)
+        if (m_gaderInput.IsAtack && canHit)
         {           
             m_animator.SetTrigger(idIsAtack);
+            StartCoroutine(CanAtackRoutine());
             StartCoroutine(AtackRutine());
+
         }        
          //Debug.Log(atacking);
         m_gaderInput.IsAtack = false;
+    }
+    private IEnumerator CanAtackRoutine()
+    {
+        canHit = false;
+       yield return new WaitForSeconds(canAtackDelay);
+        canHit = true;
     }
 
     private IEnumerator AtackRutine()
     {
         isAtack = true;
-        m_ColliderDamage.enabled = true; //Activar collider de da�o
-        yield return new WaitForSeconds(atackDelay); //Tiempo de animacion de ataque
-        m_ColliderDamage.enabled = false; //Desactivar collider de da�o
+        m_ColliderDamage.enabled = true; //Activar collider de daño
+        yield return new WaitForSeconds(atackColliderDelay); //Tiempo de animacion de ataque
+        m_ColliderDamage.enabled = false; //Desactivar collider de daño
         isAtack = false;
     }
 
     private void WallJump()
     {
         m_rigidbody.linearVelocity = new Vector2(wallJumpForce.x * -direction, wallJumpForce.y);
-        HandleDirection();
+        HandleFlipDirection();
         StartCoroutine(WallJumpRutine());
     }
     IEnumerator WallJumpRutine()
@@ -264,13 +389,7 @@ public class PlayerController : MonoBehaviour
        m_animator.SetBool(idKnockBack, isKnocked);
        knockedPower = new Vector2(defaulKnockedPower.x, defaulKnockedPower.y);
     }
-    private void SetAnimatorValues()
-    {
-        m_animator.SetFloat(idSpeed, Mathf.Abs(m_rigidbody.linearVelocityX));
-        m_animator.SetBool(idIsGrounded, isGrounded);
-        m_animator.SetBool(idIsWallDetected,isWallDetected);
-        
-    }
+
     public void Die() 
     {
         GameObject vfxPrefab = Instantiate(deathVfx,m_transform.position, Quaternion.identity);
@@ -301,6 +420,7 @@ public class PlayerController : MonoBehaviour
     {
       yield return new WaitForSeconds(moveDelay);
         SceneManager.LoadScene(0);
+        canMove = true;
     }
     private void OnDrawGizmos()
     {
