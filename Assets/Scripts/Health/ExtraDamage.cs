@@ -9,15 +9,15 @@ public class ExtraDamage : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             PlayerController player = collision.GetComponent<PlayerController>();
-            player.KnockedPower = extraKnockedPower;
-            player.KnowcBack(transform.position.x);
+            player.KnockedForce = extraKnockedPower;
+            player.KnockBack(transform.position.x);
         }
         //if (!collision.CompareTag("PlayerDamage_1")) return;
         if (collision.CompareTag("PlayerDamage_1"))
         {
             PlayerController _player = collision.GetComponentInParent<PlayerController>();
-            _player.KnockedPower = extraKnockedPower;
-            _player.KnowcBack(transform.position.x);
+            _player.KnockedForce = extraKnockedPower;
+            _player.KnockBack(transform.position.x);
         }
         
       /*  var playerr = collision.GetComponent<PlayerController>() ;

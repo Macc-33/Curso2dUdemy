@@ -27,7 +27,7 @@ public class DamageEnemy_1 : MonoBehaviour
         {
             if (_isAtack) return;
             StartCoroutine(OnAtackCoroutine());
-            collision.GetComponent<PlayerController>().KnowcBack(transform.position.x);
+            collision.GetComponent<PlayerController>().KnockBack(transform.position.x);
         }     
     }
     private void OnTriggerStay2D(Collider2D collision)
@@ -37,7 +37,7 @@ public class DamageEnemy_1 : MonoBehaviour
         {           
             if (_isAtack) return;
             StartCoroutine(OnAtackCoroutine());
-            collision.GetComponent<PlayerController>().KnowcBack(transform.position.x);           
+            collision.GetComponent<PlayerController>().KnockBack(transform.position.x);           
         }
     }
     private IEnumerator OnAtackCoroutine()

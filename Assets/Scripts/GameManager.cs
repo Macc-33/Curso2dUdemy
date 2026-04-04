@@ -5,12 +5,14 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+    public static event System.Action<PlayerController> OnPlayerSpawned;
 
     [Header("Player Settings")]
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private Transform playerRespwnPoint;
+    [SerializeField] private Transform playerRespawnPoint;
     [SerializeField] private PlayerController _playerController;
-    [SerializeField] private float respwnPlayerDelay;
+    [SerializeField] private float respawnPlayerDelay;
+
     public PlayerController PlayerController { get => _playerController; }
 
     [Header("Respwn Settings")]
@@ -28,6 +30,8 @@ public class GameManager : MonoBehaviour
     public int DiamondCollected { get => _diamondCollected; }
     public bool DiamondHaveRandomLook1 { get => diamondHaveRandomLook; set => diamondHaveRandomLook = value; }
 
+ 
+
     private void Awake()
     {
         if (instance == null) instance = this;
@@ -40,24 +44,25 @@ public class GameManager : MonoBehaviour
     }
     public void RespwnPlayer()
     {
-        if (hasCheckPointActive) playerRespwnPoint.position = checkPointRespwnPosition;
+        if (hasCheckPointActive) playerRespawnPoint.position = checkPointRespwnPosition;
         StartCoroutine(RespwnPlayerCoroutine());
     }
     IEnumerator RespwnPlayerCoroutine()
     {
+      
+
         if (!hasCheckPointActive)
-        {
-            yield return new WaitForSeconds(respwnPlayerDelay);
-            GameObject newPlayer = Instantiate(playerPrefab, playerRespwnPoint.position, Quaternion.identity);
-            newPlayer.name = ("Player");
-            _playerController = newPlayer.GetComponent<PlayerController>();
-        }
-        else
-        {
-            GameObject newPlayer = Instantiate(playerPrefab, playerRespwnPoint.position, Quaternion.identity);
-            newPlayer.name = ("Player");
-            _playerController = newPlayer.GetComponent<PlayerController>();
-        }
+            yield return new WaitForSeconds(respawnPlayerDelay);
+
+        GameObject newPlayer =
+            Instantiate( playerPrefab, playerRespawnPoint.position,Quaternion.identity);
+
+        newPlayer.name = "Player";
+
+        _playerController =newPlayer.GetComponent<PlayerController>();
+
+       
+        OnPlayerSpawned?.Invoke(_playerController);
 
     }
     public void CreateObject(GameObject prefab, Vector3 position, float delay)

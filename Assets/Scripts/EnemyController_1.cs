@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.XR;
 
 public class EnemyController_1 : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class EnemyController_1 : MonoBehaviour
     [SerializeField] private float atackSpeed;
     [SerializeField] private bool canAtack;
     [SerializeField] private bool isAtack;
-    [SerializeField] private PlayerController _playerController;
+    [SerializeField] private PlayerController _player;
     [SerializeField] private EnemyPlayerDetect _enemyPlayerDetect;
     [SerializeField] private DamageEnemy_1 _damageEnemy_1;
     [SerializeField] private Transform playerPoint;
@@ -38,17 +39,40 @@ public class EnemyController_1 : MonoBehaviour
     private int idEnemyRun = Animator.StringToHash("EnemyRun");
     private int idKnockBack = Animator.StringToHash("HitBack");
     private int idOnAtack = Animator.StringToHash("OnAtack");
+    private enum EnemyState
+    {
+        Idle,
+        Patrol,
+        Chase,
+        Attack,
+        Knockback
+    }
+    [Header("FSM Settings ")]   
+    [SerializeField] private EnemyState currentState;
 
     private void Awake()
     {
         _Rigidbody = GetComponent<Rigidbody2D>();
         _Animator = GetComponent<Animator>();
         _SpriteRenderer = GetComponent<SpriteRenderer>();
-        //_playerController = FindObjectOfType<PlayerController>();
-        _playerController = FindAnyObjectByType<PlayerController>();
+        _player = FindAnyObjectByType<PlayerController>();
         _enemyPlayerDetect = GetComponentInChildren<EnemyPlayerDetect>();
         _damageEnemy_1 = GetComponentInChildren<DamageEnemy_1>();
-        playerPoint = _playerController.Transform;
+        playerPoint = _player.Transform;
+    }
+    private void OnEnable()
+    {
+        GameManager.OnPlayerSpawned += SetPlayerReference;
+    }
+    private void OnDisable()
+    {
+        GameManager.OnPlayerSpawned -= SetPlayerReference;
+    }
+    private void SetPlayerReference(PlayerController newPlayer)
+    {
+        _player = newPlayer;
+
+        playerPoint = _player.transform;
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -58,6 +82,7 @@ public class EnemyController_1 : MonoBehaviour
        UpdateWayPoint();
        indexWayPoints = 1;
        transform.position = myWayPointsPosition[0];
+       currentState = EnemyState.Patrol;
     }
     private void UpdateWayPoint()
     {
@@ -70,46 +95,143 @@ public class EnemyController_1 : MonoBehaviour
     }
     // Update is called once per frame
     void Update()
-    {       
-        if (!canMove) return; 
-        if(isKnocked) return;
-        Movenment();  
-        Atack();
-        if (_enemyPlayerDetect.NewUpdatePointposition)
+    {
+        HandleStateTransitions();
+    }
+    private void HandleStateTransitions()
+    {
+        // Verificar si el enemigo está en knockback
+        if (isKnocked)
         {
-            UpdateWayPoint();      
-            _enemyPlayerDetect.NewUpdatePointposition = false;
+            ChangeState(EnemyState.Knockback);
+            return;
         }
+
+        // Verificar si el enemigo puede atacar al player
+        canAtack = _enemyPlayerDetect.CanAtack;
+
+        if (canAtack)
+        {
+            ChangeState(EnemyState.Attack);
+            return;
+        }
+      
+        // Verificar si el player está dentro del rango de persecución
+        if (playerPoint != null)
+        {
+            float distanceToPlayer = Vector2.Distance(playerPoint.position, transform.position);
+
+            if (distanceToPlayer < 3f) // Rango de chase
+            {
+                ChangeState(EnemyState.Chase);
+                return;
+            }
+            else // Player fuera del rango
+            {
+                // Actualizar waypoints si el player salió de la zona
+                // NUEVO: player salió del área
+                if (_enemyPlayerDetect.NewUpdatePointposition)
+                {
+                    UpdateWayPoint();
+                    _enemyPlayerDetect.NewUpdatePointposition = false;
+                    indexWayPoints = GetClosestWaypoint();
+                    indexWayPoints = Mathf.Clamp(indexWayPoints, 0, myWayPointsPosition.Length - 1);
+                }
+
+                ChangeState(EnemyState.Patrol); // Volver al patrullaje
+                return;
+            }
+        }
+        // Si no hay player
+        ChangeState(EnemyState.Patrol);
+
+        // Verificar si el player está dentro del rango de persecución
+        if (playerPoint != null)
+        {
+            float distance = Mathf.Abs( playerPoint.position.x - transform.position.x);
+
+            if (distance < 5f)
+            {
+                ChangeState(EnemyState.Chase);
+                return;
+            }
+        }
+
+        // Si no se cumplen las condiciones anteriores, el enemigo patrulla
+        if (canMove)
+            ChangeState(EnemyState.Patrol);
+        else
+            ChangeState(EnemyState.Idle);
+    }
+    private int GetClosestWaypoint()
+    {
+        float closestDistance = Mathf.Infinity;
+
+        int closestIndex = 0;
+
+        for (int i = 0; i < myWayPointsPosition.Length; i++)
+        {
+            float distance = Vector2.Distance( transform.position, myWayPointsPosition[i]);
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestIndex = i;
+            }
+        }
+
+        return closestIndex;
+    }
+    private void ChangeState(EnemyState newState)
+    {
+        if (currentState == newState)
+            return;
+
+        currentState = newState;
     }
 
     private void FixedUpdate()
     {
+        switch (currentState)
+        {
+            case EnemyState.Idle:
+                HandleIdleState();
+                break;
+
+            case EnemyState.Patrol:
+                HandlePatrolState();
+                break;
+
+            case EnemyState.Chase:
+                HandleChaseState();
+                break;
+
+            case EnemyState.Attack:
+                HandleAttackState();
+                break;
+
+            case EnemyState.Knockback:
+                HandleKnockbackState();
+                break;
+        }
+
         Flip();
-        StopBetweenPoints();
         SetAnimationValues();
     }
-  
-    private void Flip()
-    {
-        float direction;
 
-        if (canAtack && playerPoint != null)
-            direction = playerPoint.position.x - transform.position.x;
-        else
-            direction = myWayPointsPosition[indexWayPoints].x - transform.position.x;
-
-        _SpriteRenderer.flipX = direction > 0;
-    }
-    private IEnumerator FlipDelayCorutine(float delay)
+    private void HandleIdleState() // El enemigo se queda quieto
     {
-        yield return new WaitForSeconds(1);
+        _Rigidbody.linearVelocity =  new Vector2(0,_Rigidbody.linearVelocity.y);
     }
-    private void Movenment()
-    {        
-        EnemyRutine();       
+    private void HandlePatrolState() // El enemigo se mueve entre los puntos de patrulla
+    {
+        canMove = true; // asegurar que puede moverse
+        EnemyRutine();
+        StopBetweenPoints();
     }
     void EnemyRutine()
     {
+        if (myWayPointsPosition.Length == 0) return;
         if (isKnocked) return;
         canAtack = _enemyPlayerDetect.CanAtack;
         if (canAtack == true) return;
@@ -118,11 +240,11 @@ public class EnemyController_1 : MonoBehaviour
 
         _Rigidbody.linearVelocity = new Vector2(direction * normalSpeed, _Rigidbody.linearVelocity.y);
     }
-
     private void StopBetweenPoints()
     {
         if (canAtack) return;
         if(isKnocked) return ;
+        if (myWayPointsPosition.Length == 0) return;
         if (Vector2.Distance(transform.position, myWayPointsPosition[indexWayPoints]) < 0.3)
         {
             if (indexWayPoints == myWayPointsPosition.Length - 1 || indexWayPoints == 0)
@@ -132,16 +254,42 @@ public class EnemyController_1 : MonoBehaviour
               
             }
             indexWayPoints = indexWayPoints + moveDirection;
+            indexWayPoints = Mathf.Clamp(indexWayPoints, 0, myWayPointsPosition.Length - 1);
         }
     }
-
-    IEnumerator StopBetweenPointsRoutine(float delayTime)
+    private void HandleChaseState() // El enemigo persigue al jugador
     {
-        canMove = false;
-        moveDirection = moveDirection * -1;
-        yield return new WaitForSeconds(delayTime);
-        canMove = true;
-        //spriteRenderer.flipX = !spriteRenderer.flipX; //cuando la sierra llega a un extremo hace el cambio de direccion 
+        if (playerPoint == null)return;
+
+        float direction = Mathf.Sign(playerPoint.position.x - transform.position.x);
+
+        _Rigidbody.linearVelocity = new Vector2(direction * normalSpeed,_Rigidbody.linearVelocity.y);
+    }
+    private void HandleAttackState()
+    {
+        if (playerPoint == null) return;
+
+        isAtack = _damageEnemy_1.IsAtack;
+
+        float direction = Mathf.Sign(playerPoint.position.x - transform.position.x );
+
+        _Rigidbody.linearVelocity = new Vector2( direction * atackSpeed, _Rigidbody.linearVelocity.y);
+    }
+    private void HandleKnockbackState()
+    {
+        // No movement here
+    }
+    private void Flip()
+    {
+        if (myWayPointsPosition.Length == 0) return;
+        float direction;
+
+        if (canAtack && playerPoint != null)
+            direction = playerPoint.position.x - transform.position.x;
+        else
+            direction = myWayPointsPosition[indexWayPoints].x - transform.position.x;
+
+        _SpriteRenderer.flipX = direction > 0;
     }
     private void SetAnimationValues()
     {
@@ -149,15 +297,13 @@ public class EnemyController_1 : MonoBehaviour
         _Animator.SetBool(idKnockBack, isKnocked);  
         _Animator.SetBool(idOnAtack, isAtack);
     }
-    private void Atack()
+    IEnumerator StopBetweenPointsRoutine(float delayTime)
     {
-        if (playerPoint == null) return;
-        if (!canAtack) return;
-        if (isKnocked) return;
-        isAtack = _damageEnemy_1.IsAtack;
-        float direction = Mathf.Sign(playerPoint.position.x - transform.position.x);
-
-        _Rigidbody.linearVelocity = new Vector2(direction * atackSpeed, _Rigidbody.linearVelocity.y);     
+        canMove = false;
+        moveDirection = moveDirection * -1;
+        yield return new WaitForSeconds(delayTime);
+        canMove = true;
+        //spriteRenderer.flipX = !spriteRenderer.flipX; //cuando la sierra llega a un extremo hace el cambio de direccion 
     }
     public void KnowcBack(float sourceDamageXPosition)
     {     
@@ -175,4 +321,8 @@ public class EnemyController_1 : MonoBehaviour
         yield return new WaitForSeconds(knockedDuration);
         isKnocked = false;
     }
+ 
+ 
+
+
 }

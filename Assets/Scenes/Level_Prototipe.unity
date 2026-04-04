@@ -5008,9 +5008,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   playerPrefab: {fileID: 4205363968054839250, guid: 80fcaff6085bf66498a7936969f76120, type: 3}
-  playerRespwnPoint: {fileID: 791080415}
+  playerRespawnPoint: {fileID: 791080415}
   _playerController: {fileID: 576004926}
-  respwnPlayerDelay: 1
+  respawnPlayerDelay: 0
   hasCheckPointActive: 0
   checkPointRespwnPosition: {x: 0, y: 0, z: 0}
   diamondHaveRandomLook: 1
@@ -9786,6 +9786,18 @@ PrefabInstance:
     - target: {fileID: 4205363968054839250, guid: 80fcaff6085bf66498a7936969f76120, type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 9145006096588915932, guid: 80fcaff6085bf66498a7936969f76120, type: 3}
+      propertyPath: knockedPower.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9145006096588915932, guid: 80fcaff6085bf66498a7936969f76120, type: 3}
+      propertyPath: knockedDuration
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 9145006096588915932, guid: 80fcaff6085bf66498a7936969f76120, type: 3}
+      propertyPath: knockbackForce.x
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9145006096588915932, guid: 80fcaff6085bf66498a7936969f76120, type: 3}
       propertyPath: checkWallDistance
