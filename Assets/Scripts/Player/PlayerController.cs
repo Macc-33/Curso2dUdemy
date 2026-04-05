@@ -456,6 +456,8 @@ public class PlayerController : MonoBehaviour
     void prueba()
     {
         Debug.Log("prueba");
+        Debug.Log("prueba");
+
     }
     public void Die() 
     {
