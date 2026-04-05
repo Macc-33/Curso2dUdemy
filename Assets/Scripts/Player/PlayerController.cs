@@ -453,7 +453,10 @@ public class PlayerController : MonoBehaviour
 
 
     // fal
-
+    void prueba()
+    {
+        Debug.Log("prueba");
+    }
     public void Die() 
     {
         if (isDead) return;
