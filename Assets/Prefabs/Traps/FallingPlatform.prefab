@@ -255,3 +255,6 @@ MonoBehaviour:
   fallDelay: 0.6
   impactSpeed: 3
   impactDuration: 0.2
+  canRespwn: 1
+  respwnDelay: 2
+  respwnAfterFallTime: 3
