@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     [Header("Player Settings")]
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private Transform playerRespawnPoint;
+    [SerializeField] private Transform startPlayerPoint;
     [SerializeField] private PlayerController _playerController;
     [SerializeField] private float respawnPlayerDelay;
 
@@ -45,7 +46,11 @@ public class GameManager : MonoBehaviour
     public void RespwnPlayer()
     {
         if (hasCheckPointActive) playerRespawnPoint.position = checkPointRespwnPosition;
-        StartCoroutine(RespwnPlayerCoroutine());
+        else
+        {
+            playerRespawnPoint = startPlayerPoint;
+        }
+            StartCoroutine(RespwnPlayerCoroutine());
     }
     IEnumerator RespwnPlayerCoroutine()
     {

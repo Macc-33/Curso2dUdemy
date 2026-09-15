@@ -100,6 +100,11 @@ public class PlayerController : MonoBehaviour
         m_rigidbody = GetComponent<Rigidbody2D>();
         m_animator = GetComponent<Animator>();  
         m_ColliderDamage = GetComponentInChildren<CircleCollider2D>();
+
+        //BUG #1
+        checkWallDistance = 0.5f;
+        canAtackDelay = 0.6f;
+
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -273,6 +278,7 @@ public class PlayerController : MonoBehaviour
     private void HandleWall()
     {
         isWallDetected = Physics2D.Raycast(m_transform.position, Vector2.right * direction, checkWallDistance, groundLayer);
+        
     }
     private void handelWallSlide()
     {
@@ -280,6 +286,9 @@ public class PlayerController : MonoBehaviour
         if (!canWallSlide)return;
         speedSlice = m_gaderInput.Value.y < 0 ? 1 : 0.5f;
         m_rigidbody.linearVelocity = new Vector2 (m_rigidbody.linearVelocity.x, m_rigidbody.linearVelocity.y * speedSlice);
+
+        //CON ESTO SE REINICIA EL DOBLE SALTO AL ESCALAR UNA PARED 
+        counterExtraJump = extraJump;
     }
     private void CheckCollision()
     {
@@ -455,7 +464,6 @@ public class PlayerController : MonoBehaviour
     // fal
     void prueba()
     {
-        Debug.Log("prueba");
         Debug.Log("prueba");
         Debug.Log("prueba");
 

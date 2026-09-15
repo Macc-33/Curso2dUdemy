@@ -259,24 +259,27 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
-  checkWallDistance: 0.29
+  checkWallDistance: 0.5
   isWallDetected: 0
-  canWallSlide: 0
+  canWallSlide: 1
   speedSlice: 0
   wallJumpForce: {x: 5, y: 8}
   isWasJumping: 0
   wallJumpDuration: 0.5
-  isKnocked: 0
   canBeKnocked: 0
-  knockedPower: {x: 0, y: 0}
-  defaulKnockedPower: {x: 3, y: 0}
-  knockedDuration: 0.6
+  knockedDuration: 0.8
+  defaultKnockbackForce: {x: 0, y: 0}
+  isKnocked: 0
+  knockbackForce: {x: 3, y: 0}
   m_ColliderDamage: {fileID: 0}
   atackColliderDelay: 0.2
   canHit: 0
   canAtackDelay: 1
-  isAtack: 0
+  isAttack: 0
   deathVfx: {fileID: 5515441878203045759, guid: d886708221d95e8479bf0c835f42f38b, type: 3}
+  deathDelay: 0
+  isDead: 0
+  currentState: 0
 --- !u!114 &8159775981202770554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -363,7 +366,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7731367540808037522}
   - component: {fileID: 6970661389134624582}
-  - component: {fileID: 6751558706512496735}
+  - component: {fileID: 7590491014159678141}
   m_Layer: 6
   m_Name: Atack_1
   m_TagString: PlayerDamage_1
@@ -422,7 +425,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0.62, y: 0}
   m_Radius: 0.8
---- !u!114 &6751558706512496735
+--- !u!114 &7590491014159678141
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -431,6 +434,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6367016752272072358}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f42fd5b48245c2f44a9d9f8f61455bb5, type: 3}
+  m_Script: {fileID: 11500000, guid: 50a35855985c90540bce1cae7ccd2a76, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Atack_1
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  damage: 20
