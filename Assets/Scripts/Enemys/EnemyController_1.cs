@@ -39,16 +39,25 @@ public class EnemyController_1 : MonoBehaviour
     private int idEnemyRun = Animator.StringToHash("EnemyRun");
     private int idKnockBack = Animator.StringToHash("HitBack");
     private int idOnAtack = Animator.StringToHash("OnAtack");
+    private int idDeath = Animator.StringToHash("Death");
+    [Header("Dead Setings")]
+    [SerializeField] private EnemyHealth _enemyHealth;
+    [SerializeField] private float deathDelay = 1.5f;
+      
+    private bool deathStarted = false;
     private enum EnemyState
     {
         Idle,
         Patrol,
         Chase,
         Attack,
-        Knockback
+        Knockback,
+        Death
+            
     }
     [Header("FSM Settings ")]   
     [SerializeField] private EnemyState currentState;
+    
 
     private void Awake()
     {
@@ -59,6 +68,7 @@ public class EnemyController_1 : MonoBehaviour
         _enemyPlayerDetect = GetComponentInChildren<EnemyPlayerDetect>();
         _damageEnemy_1 = GetComponentInChildren<DamageEnemy_1>();
         playerPoint = _player.Transform;
+        _enemyHealth = GetComponent<EnemyHealth>();
     }
     private void OnEnable()
     {
@@ -100,6 +110,12 @@ public class EnemyController_1 : MonoBehaviour
     }
     private void HandleStateTransitions()
     {
+        //verificar si estamos esta muerto 
+        if (_enemyHealth.IsDead)
+        {
+            ChangeState(EnemyState.Death);
+            return;
+        }
         // Verificar si el enemigo está en knockback
         if (isKnocked)
         {
@@ -213,11 +229,15 @@ public class EnemyController_1 : MonoBehaviour
             case EnemyState.Knockback:
                 HandleKnockbackState();
                 break;
+            case EnemyState.Death:
+                HandleDeathState();
+                break;
         }
 
         Flip();
         SetAnimationValues();
     }
+
 
     private void HandleIdleState() // El enemigo se queda quieto
     {
@@ -279,6 +299,43 @@ public class EnemyController_1 : MonoBehaviour
     {
         // No movement here
     }
+
+    private void HandleDeathState()
+    {
+
+        _Rigidbody.linearVelocity = Vector2.zero;
+
+        if (deathStarted) return;
+
+        deathStarted = true;
+
+        Collider2D damageCollider = _damageEnemy_1.GetComponent<Collider2D>();
+
+        if (damageCollider != null)
+        {
+            damageCollider.enabled = false;
+        }
+        isKnocked = false;
+
+        _Animator.SetBool(idKnockBack, false);
+        _Animator.SetTrigger(idDeath);
+
+        StartCoroutine(DeathCoroutine());
+
+        Debug.Log("Death State Started");
+    }
+
+    private IEnumerator DeathCoroutine()
+    {
+        Debug.Log("Death Coroutine Started");
+
+        yield return new WaitForSeconds(deathDelay);
+
+        Debug.Log("Destroying Enemy: " + gameObject.name);
+
+        Destroy(gameObject);
+    }
+
     private void Flip()
     {
         if (myWayPointsPosition.Length == 0) return;

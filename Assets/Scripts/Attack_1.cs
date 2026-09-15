@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine;
 
-public class Atack_1 : MonoBehaviour
+public class Attack_1 : MonoBehaviour
 {
     /*[SerializeField] private Vector2 hitPower;
     [SerializeField] private Vector2 hitDefault;
@@ -22,6 +22,12 @@ public class Atack_1 : MonoBehaviour
         {
             
             Debug.Log("Hit Enemy");
+            EnemyHealth enemyHealth = collision.GetComponent<EnemyHealth>();
+
+            if (enemyHealth != null)
+            {
+                enemyHealth.TakeDamage(20);
+            }
             collision.GetComponent<EnemyController_1>().KnowcBack(transform.position.x);
             //StartCoroutine(AtackCoroutine());
            
