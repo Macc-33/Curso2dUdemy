@@ -1,6 +1,6 @@
 
 
-public enum DiamondType 
+public enum SoulType 
 {
     Cyan, Red, Yellow, Green
 }
