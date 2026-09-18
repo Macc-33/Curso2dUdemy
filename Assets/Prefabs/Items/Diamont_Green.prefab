@@ -128,7 +128,7 @@ GameObject:
   - component: {fileID: 2017120312316614253}
   m_Layer: 9
   m_Name: Diamont_Green
-  m_TagString: Diamond
+  m_TagString: Soul
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -228,4 +228,4 @@ MonoBehaviour:
   m_rigidBody: {fileID: 0}
   spriteRenderer: {fileID: 0}
   animator: {fileID: 0}
-  diamondType: 3
+  soulType: 0

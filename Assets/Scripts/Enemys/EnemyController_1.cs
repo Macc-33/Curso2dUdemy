@@ -43,7 +43,8 @@ public class EnemyController_1 : MonoBehaviour
     [Header("Dead Setings")]
     [SerializeField] private EnemyHealth _enemyHealth;
     [SerializeField] private float deathDelay = 1.5f;
-      
+    private _SoulDropper soulDropper;
+
     private bool deathStarted = false;
     private enum EnemyState
     {
@@ -69,6 +70,7 @@ public class EnemyController_1 : MonoBehaviour
         _damageEnemy_1 = GetComponentInChildren<DamageEnemy_1>();
         playerPoint = _player.Transform;
         _enemyHealth = GetComponent<EnemyHealth>();
+        soulDropper = GetComponent<_SoulDropper>();
     }
     private void OnEnable()
     {
@@ -329,7 +331,15 @@ public class EnemyController_1 : MonoBehaviour
     {
         Debug.Log("Death Coroutine Started");
 
+        yield return new WaitForSeconds(0.35f);
+        if (soulDropper != null)
+        {
+            soulDropper.DropSouls();
+        }
+
         yield return new WaitForSeconds(deathDelay);
+
+     
 
         Debug.Log("Destroying Enemy: " + gameObject.name);
 

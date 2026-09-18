@@ -20,16 +20,16 @@ public class GameManager : MonoBehaviour
     public bool hasCheckPointActive = false;
     public Vector3 checkPointRespwnPosition;
 
-    [Header("DiamondItems")]
-    [SerializeField] private bool diamondHaveRandomLook;
-    [SerializeField] private int _diamondCollected;
-    [SerializeField] private int totalDiamonds;
+    [Header("SoulItems")]
+    [SerializeField] private bool soulsHaveRandomLook;
+    [SerializeField] private int _soulCollected;
+    [SerializeField] private int totalSouls;
 
     [Header("Traps")]
     public GameObject arrowPrefab;
     public GameObject fallingPlatformPrefab;
-    public int DiamondCollected { get => _diamondCollected; }
-    public bool DiamondHaveRandomLook1 { get => diamondHaveRandomLook; set => diamondHaveRandomLook = value; }
+    public int SoulCollected { get => _soulCollected; }
+    public bool SoulHaveRandomLook1 { get => soulsHaveRandomLook; set => soulsHaveRandomLook = value; }
 
  
 
@@ -40,8 +40,8 @@ public class GameManager : MonoBehaviour
     }
     private void Start()
     {
-        GameObject[] diamonds = GameObject.FindGameObjectsWithTag("Diamond");
-        totalDiamonds = diamonds.Length;
+        GameObject[] soul = GameObject.FindGameObjectsWithTag("Soul");
+        totalSouls = soul.Length;
     }
     public void RespwnPlayer()
     {
@@ -82,7 +82,7 @@ public class GameManager : MonoBehaviour
         GameObject newObject = Instantiate(prefab, position, Quaternion.identity);
     }
 
-    public void AddDiamond() => _diamondCollected++;
-    public void DiamondHaveRandomLook() => DiamondHaveRandomLook1 = true;
+    public void AddSoul() => _soulCollected++;
+    public void SoulHaveRandomLook() => SoulHaveRandomLook1 = true;
     
 }

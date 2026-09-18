@@ -163,6 +163,7 @@ GameObject:
   - component: {fileID: 2395006056282832233}
   - component: {fileID: 6023698645657963044}
   - component: {fileID: 296021059248614273}
+  - component: {fileID: 802611703399646024}
   m_Layer: 11
   m_Name: Enemy_1
   m_TagString: Enemy
@@ -404,6 +405,7 @@ MonoBehaviour:
   defaulKnockedPower: {x: 0, y: 0}
   knockedDuration: 0.8
   _enemyHealth: {fileID: 0}
+  deathDelay: 1.5
   currentState: 0
 --- !u!114 &296021059248614273
 MonoBehaviour:
@@ -418,6 +420,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   maxHealth: 100
+--- !u!114 &802611703399646024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5579820367647595843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07a2e6958c836e5409a5dd51ceeb556b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::_SoulDropper
+  soulPrefab: {fileID: 1951475042170217533, guid: 6551920c8542b0049af854c13c99640b, type: 3}
+  soulAmount: 5
+  spawnRadius: 0
+  minDropForce: 4
+  maxDropForce: 6.5
 --- !u!1 &6053763031805743547
 GameObject:
   m_ObjectHideFlags: 0

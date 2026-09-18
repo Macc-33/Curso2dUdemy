@@ -9,6 +9,7 @@ TagManager:
   - Diamond
   - PlayerDamage_1
   - Enemy
+  - Soul
   layers:
   - Default
   - TransparentFX
