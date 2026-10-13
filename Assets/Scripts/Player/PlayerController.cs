@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     private GaderInput m_gaderInput;
     private Animator m_animator;
     [SerializeField] private Transform m_transform;
+    [SerializeField] private SpriteRenderer m_playerSprite;
     public Transform Transform { get => m_transform; set => m_transform = value; }
     [Space]
     [Header("jumps settings")]
@@ -100,6 +101,7 @@ public class PlayerController : MonoBehaviour
         m_rigidbody = GetComponent<Rigidbody2D>();
         m_animator = GetComponent<Animator>();  
         m_ColliderDamage = GetComponentInChildren<CircleCollider2D>();
+        m_playerSprite = GetComponentInChildren<SpriteRenderer>();
 
         //BUG #1
         checkWallDistance = 0.5f;
@@ -431,6 +433,8 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(DeathRoutine());
         }
     }
+
+    [SerializeField] private SpriteRenderer playerSprite;
     private IEnumerator DeathRoutine()
     {
         canMove = false;
@@ -438,9 +442,15 @@ public class PlayerController : MonoBehaviour
         // Opcional: trigger animation
         // m_animator.SetTrigger(idDeath);
 
-        yield return new WaitForSeconds(deathDelay);
+        m_playerSprite.enabled = false;
 
         Instantiate(deathVfx, m_transform.position, Quaternion.identity);
+
+        GameManager.instance.RespwnPlayer();
+
+        yield return new WaitForSeconds(deathDelay);
+
+       
 
         Destroy(gameObject);
     }

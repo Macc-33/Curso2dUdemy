@@ -2,33 +2,34 @@ using UnityEngine;
 
 public class ExtraDamage : MonoBehaviour
 {
+    [SerializeField] private int damage = 20;
     [SerializeField] private Vector2 extraKnockedPower;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //if (!collision.CompareTag("Player")) return;
-        if (collision.CompareTag("Player"))
-        {
-            PlayerController player = collision.GetComponent<PlayerController>();
-            player.KnockedForce = extraKnockedPower;
-            player.KnockBack(transform.position.x);
-        }
-        //if (!collision.CompareTag("PlayerDamage_1")) return;
-        if (collision.CompareTag("PlayerDamage_1"))
-        {
-            PlayerController _player = collision.GetComponentInParent<PlayerController>();
-            _player.KnockedForce = extraKnockedPower;
-            _player.KnockBack(transform.position.x);
-        }
-        
-      /*  var playerr = collision.GetComponent<PlayerController>() ;
-        if (collision.CompareTag("Player"))
-        {
-            player.KnockedPower = extraKnockedPower;
-            player.KnowcBack(transform.position.x);
-        }*/
-     
-        
+        PlayerController playerController = null;
+        PlayerHealth playerHealth = null;
 
-        
+        if (collision.CompareTag("Player"))
+        {
+            playerController = collision.GetComponent<PlayerController>();
+            playerHealth = collision.GetComponent<PlayerHealth>();
+        }
+        else if (collision.CompareTag("PlayerDamage_1"))
+        {
+            playerController = collision.GetComponentInParent<PlayerController>();
+            playerHealth = collision.GetComponentInParent<PlayerHealth>();
+        }
+        else
+        {
+            return;
+        }
+
+        if (playerController == null || playerHealth == null)
+            return;
+
+        playerController.KnockedForce = extraKnockedPower;
+
+        playerHealth.TakeDamage( damage, transform.position.x );
     }
 }

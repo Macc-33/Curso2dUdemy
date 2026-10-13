@@ -17,11 +17,28 @@ public class CheckPoint : MonoBehaviour
     {
        idCheck = Animator.StringToHash("Check");
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+   /* private void OnTriggerEnter2D(Collider2D collision)
     {  
         if (isActive) return;
         if (collision.CompareTag("Player"))  ActiveCheckPoint(); 
+
         if (collision.CompareTag("PlayerDamage_1")) ActiveCheckPoint();
+
+        GameManager.instance.hasCheckPointActive = true;
+        GameManager.instance.checkPointRespwnPosition = transform.position;
+    }*/
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (isActive)
+            return;
+
+        if (!collision.CompareTag("Player") &&
+            !collision.CompareTag("PlayerDamage_1"))
+            return;
+
+        ActiveCheckPoint();
+
         GameManager.instance.hasCheckPointActive = true;
         GameManager.instance.checkPointRespwnPosition = transform.position;
     }
