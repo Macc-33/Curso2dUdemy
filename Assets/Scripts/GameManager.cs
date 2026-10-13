@@ -37,6 +37,8 @@ public class GameManager : MonoBehaviour
     {
         if (instance == null) instance = this;
         else Destroy(gameObject);
+
+
     }
     private void Start()
     {
@@ -52,23 +54,34 @@ public class GameManager : MonoBehaviour
         }
             StartCoroutine(RespwnPlayerCoroutine());
     }
-    IEnumerator RespwnPlayerCoroutine()
+    /*IEnumerator RespwnPlayerCoroutine()
     {
-      
+
 
         if (!hasCheckPointActive)
             yield return new WaitForSeconds(respawnPlayerDelay);
 
-        GameObject newPlayer =
-            Instantiate( playerPrefab, playerRespawnPoint.position,Quaternion.identity);
+        GameObject newPlayer = Instantiate(playerPrefab, playerRespawnPoint.position, Quaternion.identity);
 
         newPlayer.name = "Player";
 
-        _playerController =newPlayer.GetComponent<PlayerController>();
+        _playerController = newPlayer.GetComponent<PlayerController>();
 
-       
+
         OnPlayerSpawned?.Invoke(_playerController);
 
+    }*/
+    private IEnumerator RespwnPlayerCoroutine()
+    {
+        yield return new WaitForSeconds(respawnPlayerDelay);
+
+        GameObject newPlayer = Instantiate( playerPrefab,playerRespawnPoint.position,Quaternion.identity);
+
+        newPlayer.name = "Player";
+
+        _playerController = newPlayer.GetComponent<PlayerController>();
+
+        OnPlayerSpawned?.Invoke(_playerController);
     }
     public void CreateObject(GameObject prefab, Vector3 position, float delay)
     {

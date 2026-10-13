@@ -13,7 +13,7 @@ public class DeadArea : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             player.Die();
-            GameManager.instance.RespwnPlayer();
+            //GameManager.instance.RespwnPlayer();
 
         }
     }

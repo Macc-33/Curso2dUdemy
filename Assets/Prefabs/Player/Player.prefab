@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 882127840740270557}
   - component: {fileID: 9145006096588915932}
   - component: {fileID: 8159775981202770554}
+  - component: {fileID: 1610123392104418005}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -245,6 +246,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   m_transform: {fileID: 3228613570312465455}
+  m_playerSprite: {fileID: 0}
   jumpForce: 10
   extraJump: 1
   counterExtraJump: 0
@@ -277,9 +279,10 @@ MonoBehaviour:
   canAtackDelay: 1
   isAttack: 0
   deathVfx: {fileID: 5515441878203045759, guid: d886708221d95e8479bf0c835f42f38b, type: 3}
-  deathDelay: 0
+  deathDelay: 2
   isDead: 0
   currentState: 0
+  playerSprite: {fileID: 0}
 --- !u!114 &8159775981202770554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,6 +297,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DoorsEvent
   entranceDoor: {fileID: 0}
   animatorEntranceDoor: {fileID: 0}
+--- !u!114 &1610123392104418005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4205363968054839250}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e45e5834fe7389940ad40e20ede3d45b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHealth: 100
+  currentHealth: 0
 --- !u!1 &5413033656904876692
 GameObject:
   m_ObjectHideFlags: 0
@@ -367,6 +384,7 @@ GameObject:
   - component: {fileID: 7731367540808037522}
   - component: {fileID: 6970661389134624582}
   - component: {fileID: 7590491014159678141}
+  - component: {fileID: 4843065124359356008}
   m_Layer: 6
   m_Name: Atack_1
   m_TagString: PlayerDamage_1
@@ -437,4 +455,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50a35855985c90540bce1cae7ccd2a76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  damage: 20
+--- !u!114 &4843065124359356008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6367016752272072358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a35855985c90540bce1cae7ccd2a76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Attack_2
   damage: 20

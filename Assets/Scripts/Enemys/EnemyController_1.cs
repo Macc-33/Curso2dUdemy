@@ -287,7 +287,7 @@ public class EnemyController_1 : MonoBehaviour
 
         _Rigidbody.linearVelocity = new Vector2(direction * normalSpeed,_Rigidbody.linearVelocity.y);
     }
-    private void HandleAttackState()
+    /*private void HandleAttackState()
     {
         if (playerPoint == null) return;
 
@@ -296,6 +296,21 @@ public class EnemyController_1 : MonoBehaviour
         float direction = Mathf.Sign(playerPoint.position.x - transform.position.x );
 
         _Rigidbody.linearVelocity = new Vector2( direction * atackSpeed, _Rigidbody.linearVelocity.y);
+    }*/
+    private void HandleAttackState()
+    {
+        if (playerPoint == null)
+        {
+            isAtack = false;
+            _Rigidbody.linearVelocity = Vector2.zero;
+            return;
+        }
+
+        isAtack = _damageEnemy_1.IsAtack;
+
+        float direction = Mathf.Sign(playerPoint.position.x - transform.position.x);
+
+        _Rigidbody.linearVelocity = new Vector2( direction * atackSpeed, _Rigidbody.linearVelocity.y );
     }
     private void HandleKnockbackState()
     {
